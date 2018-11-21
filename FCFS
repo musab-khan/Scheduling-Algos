@@ -1,0 +1,39 @@
+file = open("processes.txt", 'r')
+processes_burst = {}
+processes_arv = {}
+queue = []
+wait = {}
+turn_around = {}
+avg_ta_time = 0
+
+for lines in file:
+    this_line = lines.split(" ")
+    processes_arv[this_line[0]] = int(this_line[1])
+    processes_burst[this_line[0]] = int(this_line[2].strip('\n'))
+
+file.close()
+
+timer = 0
+start_time = 0
+while processes_burst != {}:
+    for key in processes_arv:
+        if processes_arv[key] == timer:
+            queue.insert(0, key)
+
+    timer = timer + 1
+    new_burst = processes_burst[queue[len(queue)-1]] - 1
+    processes_burst[queue[len(queue)-1]] = new_burst
+
+    if ( processes_burst[queue[len(queue)-1]] == 0):
+        wait[queue[len(queue)-1]] = start_time - processes_arv[queue[len(queue)-1]]
+        turn_around[queue[len(queue) - 1]] = timer - processes_arv[queue[len(queue) - 1]]
+        avg_ta_time = avg_ta_time + (timer - processes_arv[queue[len(queue)-1]])
+        print (str(start_time) + "____" + queue[len(queue)-1]+ "____" + str(timer))
+        del processes_burst[queue[len(queue)-1]]
+        queue.pop()
+        start_time = timer
+
+print (wait)
+print (turn_around)
+
+print ("average turnaround time = " + str(avg_ta_time/len(processes_arv.keys())))
